@@ -13,7 +13,7 @@
   <div class="app">
     <header class="app-header">
       <div class="header-content">
-        <img src="Images\logo.jpg" alt="Edusource Logo" class="logo">
+        <img src="Images/logo.jpg" alt="Edusource Logo" class="logo">
         <h1></h1>
       </div>
       <button id="theme-toggle-btn" class="icon-btn">
@@ -26,7 +26,7 @@
     </div>
     
     <div class="welcome-screen">
-      <img src="Images\logo.jpg" alt="Edusource Logo" class="welcome-logo">
+      <img src="Images/logo.jpg" alt="Edusource Logo" class="welcome-logo">
       <h2>How can I help you today?</h2>
       <div class="quick-prompts">
         <div class="quick-prompt">
@@ -61,19 +61,26 @@
           <input type="file" id="file-input" hidden>
         </div>
         <div class="action-buttons">
+          <button type="button" id="mic-btn" class="icon-btn" title="Voice input">
+            <span class="material-symbols-rounded">mic</span>
+          </button>
           <button type="button" id="add-file-btn" class="icon-btn" title="Attach file">
             <span class="material-symbols-rounded">attach_file</span>
           </button>
-          <button type="submit" class="icon-btn primary" title="Send message">
+          <button type="submit" id="send-btn" class="icon-btn primary" title="Send message">
             <span class="material-symbols-rounded">send</span>
           </button>
-          <button type="button" id="stop-response-btn" class="icon-btn danger" title="Stop response">
+          <button type="button" id="stop-btn" class="icon-btn danger" title="Stop response">
             <span class="material-symbols-rounded">stop</span>
           </button>
-          <button type="button" id="delete-chat-btn" class="icon-btn" title="Clear chat">
+          <button type="button" id="clear-btn" class="icon-btn" title="Clear chat">
             <span class="material-symbols-rounded">delete</span>
           </button>
         </div>
+      </div>
+      <div class="listening-state" style="display: none;">
+        <span class="material-symbols-rounded">mic</span>
+        <span>Listening...</span>
       </div>
     </form>
   </div>
