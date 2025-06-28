@@ -121,46 +121,6 @@ body.light-theme .container::-webkit-scrollbar-thumb {
   min-height: calc(100% - var(--input-height));
 }
 
-/* .message {
-  max-width: 85%;
-  margin-bottom: 0.5rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: var(--message-radius);
-  line-height: 1.6;
-  position: relative;
-  box-shadow: var(--shadow);
-  word-break: break-word;
-}
-
-.user-message {
-  align-self: flex-end;
-  background-color: var(--primary-color);
-  color: white;
-  border-bottom-right-radius: 4px;
-}
-
-.bot-message {
-  align-self: flex-start;
-  background-color: var(--dark-secondary);
-  border-bottom-left-radius: 4px;
-}
-
-body.light-theme .bot-message {
-  background-color: var(--light-secondary);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.bot-message.loading .message-text::after {
-  content: '...';
-  animation: blink 1s infinite;
-}
-
-.message-content {
-  overflow-x: auto;
-} */
-
-/* ... (keep all previous CSS above) ... */
-
 .message {
   max-width: 85%;
   margin-bottom: 0.5rem;
@@ -189,6 +149,11 @@ body.light-theme .bot-message {
   border-bottom-left-radius: 4px;
 }
 
+body.light-theme .bot-message {
+  background-color: var(--light-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -197,7 +162,6 @@ body.light-theme .bot-message {
   object-fit: cover;
 }
 
-/* Ensure bot avatar isn't larger than user avatar */
 .bot-message .avatar {
   width: 35px;
   height: 35px;
@@ -207,8 +171,6 @@ body.light-theme .bot-message {
   flex: 1;
   overflow-x: auto;
 }
-
-/* ... (keep all remaining CSS below) ... */
 
 .message-text {
   white-space: pre-wrap;
@@ -397,7 +359,6 @@ body.light-theme .icon-btn:hover {
   border: 2px solid var(--primary-color);
 }
 
-/* Quick Prompts - Horizontal on desktop */
 .quick-prompts {
   display: flex;
   flex-wrap: wrap;
@@ -476,6 +437,25 @@ body.light-theme .quick-prompt {
 
 .copy-code.copied {
   background-color: var(--secondary-color);
+}
+
+.listening-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: var(--accent-color);
+  color: white;
+  border-radius: var(--border-radius);
+  margin-top: 0.5rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
 }
 
 /* Mobile - Vertical quick prompts */
