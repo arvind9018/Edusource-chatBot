@@ -398,7 +398,7 @@ body.light-theme .icon-btn:hover {
 }
 
 /* Quick Prompts - Horizontal on desktop */
-.quick-prompts {
+/* .quick-prompts {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -436,6 +436,57 @@ body.light-theme .quick-prompt {
 .quick-prompt .material-symbols-rounded {
   font-size: 2rem;
   color: var(--primary-color);
+} */
+
+/* Quick Prompts - Horizontal on desktop */
+.quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.quick-prompt {
+  background-color: var(--dark-secondary);
+  padding: 1.2rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Remove fixed width and use flex-grow instead */
+  flex: 1 1 auto;
+  min-width: 0; /* Allows text to shrink properly */
+}
+
+/* Mobile - Vertical quick prompts */
+@media (max-width: 768px) {
+  .quick-prompts {
+    flex-direction: column;
+    padding: 0;
+    gap: 0.8rem;
+  }
+
+  .quick-prompt {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 1rem;
+    /* Remove any fixed sizing constraints */
+    min-width: auto;
+    max-width: none;
+  }
+
+  .quick-prompt .material-symbols-rounded {
+    margin-right: 0.8rem;
+    /* Keep icon size consistent */
+    font-size: 1.5rem;
+  }
 }
 
 .code-block {
