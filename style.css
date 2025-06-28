@@ -12,19 +12,30 @@
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --border-radius: 12px;
   --message-radius: 18px;
+  --header-height: 60px;
+  --input-height: 60px;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  height: 100%;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background-color: var(--dark-bg);
   color: var(--dark-text);
   transition: background-color 0.3s, color 0.3s;
+  height: 100%;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body.light-theme {
@@ -32,23 +43,31 @@ body.light-theme {
   color: var(--light-text);
 }
 
+#root, .app {
+  height: 100%;
+}
+
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
+  height: 100vh;
+  height: 100dvh; /* For mobile browsers */
 }
 
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.5rem;
   background-color: var(--dark-secondary);
   box-shadow: var(--shadow);
   z-index: 10;
+  height: var(--header-height);
+  position: sticky;
+  top: 0;
 }
 
 body.light-theme .app-header {
@@ -59,21 +78,19 @@ body.light-theme .app-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  
 }
 
 .logo {
-  
-  width: 50px;         /* or any size you want */
-  height: 50px;
-  object-fit: cover;    /* ensures the image doesn't stretch */
-  border-radius: 50%;   /* this makes the image circular */
-  border: 2px solid #000; /* optional: adds a border */
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
 }
 
 h1 {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .container {
@@ -81,6 +98,25 @@ h1 {
   overflow-y: auto;
   padding: 1rem;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Better scrollbar styling */
+.container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+body.light-theme .container::-webkit-scrollbar-thumb {
+  background: #ccc;
 }
 
 .chatsContainer {
@@ -88,16 +124,18 @@ h1 {
   flex-direction: column;
   gap: 1rem;
   padding-bottom: 1rem;
+  min-height: calc(100% - var(--input-height));
 }
 
 .message {
-  max-width: 90%;
+  max-width: 85%;
   margin-bottom: 0.5rem;
-  padding: 1rem;
+  padding: 0.8rem 1rem;
   border-radius: var(--message-radius);
-  line-height: 1.5;
+  line-height: 1.6;
   position: relative;
   box-shadow: var(--shadow);
+  word-break: break-word;
 }
 
 .user-message {
@@ -115,6 +153,7 @@ h1 {
 
 body.light-theme .bot-message {
   background-color: var(--light-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .bot-message.loading .message-text::after {
@@ -124,29 +163,35 @@ body.light-theme .bot-message {
 
 .message-content {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .message-text {
   white-space: pre-wrap;
-  word-wrap: break-word;
 }
 
 .message pre {
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  margin: 0.5rem 0;
+  margin: 0.8rem 0;
   padding: 1rem;
   overflow-x: auto;
 }
 
+body.light-theme .message pre {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .message code {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9rem;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85rem;
 }
 
 .message table {
   border-collapse: collapse;
   width: 100%;
   margin: 1rem 0;
+  font-size: 0.9rem;
 }
 
 .message th, .message td {
@@ -174,9 +219,11 @@ body.light-theme .message td {
 }
 
 .prompt-form {
-  padding: 1rem;
+  padding: 0.8rem 1rem;
   background-color: var(--dark-secondary);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  bottom: 0;
 }
 
 body.light-theme .prompt-form {
@@ -205,11 +252,21 @@ body.light-theme .prompt-form {
   background-color: var(--dark-bg);
   color: var(--dark-text);
   box-shadow: var(--shadow);
+  min-height: 50px;
+  max-height: 120px;
+  resize: none;
+  line-height: 1.5;
 }
 
 body.light-theme .prompt-input {
   background-color: var(--light-secondary);
   color: var(--light-text);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.prompt-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 .file-upload-wrapper {
@@ -222,7 +279,9 @@ body.light-theme .prompt-input {
   position: absolute;
   bottom: calc(100% + 0.5rem);
   left: 0;
+  right: 0;
   z-index: 5;
+  flex-wrap: wrap;
 }
 
 .file-upload-wrapper.active {
@@ -243,14 +302,14 @@ body.light-theme .prompt-input {
 }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
   background-color: transparent;
   color: inherit;
   border: none;
@@ -258,10 +317,15 @@ body.light-theme .prompt-input {
 
 .icon-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
 }
 
 body.light-theme .icon-btn:hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
 }
 
 .icon-btn.primary {
@@ -275,23 +339,24 @@ body.light-theme .icon-btn:hover {
 }
 
 .welcome-screen {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  width: 90%;
-  max-width: 600px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  height: calc(100% - var(--header-height) - var(--input-height));
+  max-width: 800px;
+  margin: 0 auto;
   gap: 1.5rem;
 }
 
 .welcome-logo {
-  width: 120px;
-  height: auto;
-  opacity: 0.8;
+   width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
 }
 
 .quick-prompts {
@@ -299,11 +364,12 @@ body.light-theme .icon-btn:hover {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   width: 100%;
+  padding: 0 1rem;
 }
 
 .quick-prompt {
   background-color: var(--dark-secondary);
-  padding: 1.5rem 1rem;
+  padding: 1.2rem 0.8rem;
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -311,52 +377,124 @@ body.light-theme .icon-btn:hover {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.light-theme .quick-prompt {
   background-color: var(--light-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .quick-prompt:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .quick-prompt .material-symbols-rounded {
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: var(--primary-color);
+}
+
+/* Code block styles */
+.code-block {
+  position: relative;
+  margin: 1rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.copy-code {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.copy-code:hover {
+  background-color: var(--secondary-color);
+}
+
+.copy-code.copied {
+  background-color: var(--secondary-color);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  :root {
+    --header-height: 56px;
+    --border-radius: 10px;
+    --message-radius: 16px;
+  }
+  
   .app-header {
     padding: 0.8rem 1rem;
   }
   
-  .logo {
-    height: 28px;
-  }
-  
   h1 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .message {
-    max-width: 95%;
-    padding: 0.8rem;
+    max-width: 90%;
+    padding: 0.7rem;
   }
   
   .quick-prompts {
     grid-template-columns: 1fr 1fr;
   }
+  
+  .prompt-input {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+  
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .welcome-logo {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 @media (max-width: 480px) {
+  :root {
+    --header-height: 52px;
+    --border-radius: 8px;
+    --message-radius: 14px;
+  }
+  
   .quick-prompts {
     grid-template-columns: 1fr;
+    padding: 0;
+  }
+  
+  .message {
+    max-width: 95%;
   }
   
   .prompt-input {
+    min-height: 46px;
     padding: 0.7rem;
   }
   
@@ -364,42 +502,46 @@ body.light-theme .quick-prompt {
     width: 36px;
     height: 36px;
   }
+  
+  .container {
+    padding: 0.8rem;
+  }
+  
+  .welcome-screen {
+    padding: 0.8rem;
+  }
+  
+  .welcome-logo {
+    width: 50px;
+    height: 50px;
+  }
 }
 
-
-
-
-
-
-/* Add these styles to your CSS */
-.code-block {
-  position: relative;
-  margin: 1rem 0;
-  border-radius: 8px;
-  overflow: hidden;
+/* Safe area insets for notch devices */
+@supports (padding: max(0px)) {
+  .app-header, .prompt-form {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  
+  .prompt-form {
+    padding-bottom: max(0.8rem, env(safe-area-inset-bottom));
+  }
+  
+  .container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
 }
 
-.code-header {
-  background-color: #333;
-  color: white;
-  padding: 0.3rem 1rem;
-  font-family: monospace;
-  font-size: 0.8rem;
-}
-
-.copy-code {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 0.2rem 0.5rem;
-  cursor: pointer;
-  font-size: 0.7rem;
-  border-radius: 0 0 0 4px;
-}
-
-.copy-code:hover {
-  background-color: var(--secondary-color);
+/* Print styles */
+@media print {
+  .app-header, .prompt-form {
+    display: none;
+  }
+  
+  .container {
+    height: auto;
+    overflow: visible;
+  }
 }
