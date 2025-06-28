@@ -85,25 +85,28 @@ const createMsgElement = (content, ...classes) => {
   const contentDiv = document.createElement("div");
   contentDiv.classList.add("message-content");
   
-  // Process content
-  let processedContent = content
-    .replace(/```(\w+)?\n([\s\S]+?)\n```/g, (match, lang, code) => {
-      const language = lang || 'plaintext';
-      const highlightedCode = hljs.highlightAuto(code, [language]).value;
-      return `<pre><code class="hljs ${language}">${highlightedCode}</code></pre>`;
-    })
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code>$1</code>')
-    .replace(/^# (.*$)/gm, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gm, '<h4>$1</h4>')
-    .replace(/^### (.*$)/gm, '<h5>$1</h5>')
-    .replace(/- (.*$)/gm, '<li>$1</li>')
-    .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
-    .replace(/<li>.*<\/li>/gms, (match) => `<ul>${match}</ul>`)
-    .replace(/\n/g, '<br>');
+  // Preserve original formatting by using white-space: pre-wrap
+  contentDiv.style.whiteSpace = 'pre-wrap';
   
-  contentDiv.innerHTML = processedContent;
+  // For user messages, just display the text as-is
+  if (classes.includes("user-message")) {
+    contentDiv.textContent = content;
+  } 
+  // For bot messages, process markdown and code blocks
+  else {
+    // Process content while preserving newlines and spacing
+    let processedContent = content
+      .replace(/```(\w+)?\n([\s\S]+?)\n```/g, (match, lang, code) => {
+        const language = lang || 'plaintext';
+        const highlightedCode = hljs.highlightAuto(code, [language]).value;
+        return `<pre><code class="hljs ${language}">${highlightedCode}</code></pre>`;
+      })
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code>$1</code>');
+    
+    contentDiv.innerHTML = processedContent;
+  }
   
   // Add elements to message div
   div.appendChild(avatar);
@@ -123,6 +126,7 @@ const scrollToBottom = () => {
 // Typing effect for bot messages
 const typingEffect = (text, element) => {
   element.innerHTML = "";
+  element.style.whiteSpace = 'pre-wrap';
   let i = 0;
   const speed = 20;
   isTyping = true;
@@ -140,23 +144,16 @@ const typingEffect = (text, element) => {
         scrollToBottom();
       }
       
-      element.innerHTML = currentText
-        .replace(/```(\w+)?\n([\s\S]+?)\n```/g, (match, lang, code) => {
-          const language = lang || 'plaintext';
-          const highlightedCode = hljs.highlightAuto(code, [language]).value;
-          return `<pre><code class="hljs ${language}">${highlightedCode}</code></pre>`;
-        })
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`(.*?)`/g, '<code>$1</code>');
+      // For typing effect, we'll use textContent to preserve formatting
+      element.textContent = currentText;
       
       i++;
       typingInterval = setTimeout(type, speed);
     } else {
       // Final processing when typing completes or is stopped
       if (!shouldStopTyping) {
-        // Only do full formatting if not stopped
-        element.innerHTML = text
+        // Process markdown after typing completes
+        let processedContent = text
           .replace(/```(\w+)?\n([\s\S]+?)\n```/g, (match, lang, code) => {
             const language = lang || 'plaintext';
             const highlightedCode = hljs.highlightAuto(code, [language]).value;
@@ -164,14 +161,9 @@ const typingEffect = (text, element) => {
           })
           .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
           .replace(/\*(.*?)\*/g, '<em>$1</em>')
-          .replace(/`(.*?)`/g, '<code>$1</code>')
-          .replace(/^# (.*$)/gm, '<h3>$1</h3>')
-          .replace(/^## (.*$)/gm, '<h4>$1</h4>')
-          .replace(/^### (.*$)/gm, '<h5>$1</h5>')
-          .replace(/- (.*$)/gm, '<li>$1</li>')
-          .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
-          .replace(/<li>.*<\/li>/gms, (match) => `<ul>${match}</ul>`)
-          .replace(/\n/g, '<br>');
+          .replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        element.innerHTML = processedContent;
         
         // Re-highlight code blocks
         document.querySelectorAll('pre code').forEach((block) => {
@@ -188,7 +180,6 @@ const typingEffect = (text, element) => {
   clearInterval(typingInterval);
   typingInterval = setTimeout(type, speed);
 };
-
 // Generate response from Gemini API
 const generateResponse = async (botMsgDiv) => {
   const contentElement = botMsgDiv.querySelector(".message-content");
