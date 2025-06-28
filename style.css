@@ -389,9 +389,12 @@ body.light-theme .icon-btn:hover {
 }
 
 .welcome-logo {
-  width: 120px;
-  height: auto;
   opacity: 0.9;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
 }
 
 /* Quick Prompts - Horizontal on desktop */
