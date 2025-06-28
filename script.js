@@ -295,7 +295,7 @@ const handleFormSubmit = (e) => {
     botMsgDiv.classList.add("message", "bot-message");
     
     const avatar = document.createElement("img");
-    avatar.src = "Images/chatbot.jpg";
+    avatar.src = "Images/logo2.jpg";
     avatar.classList.add("avatar");
     avatar.alt = "Edusource Avatar";
     
