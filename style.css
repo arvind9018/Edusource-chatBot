@@ -12,8 +12,8 @@
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --border-radius: 12px;
   --message-radius: 18px;
-  --header-height: 60px;
-  --input-height: 60px;
+  --header-height: 70px;
+  --input-height: 80px;
 }
 
 * {
@@ -23,7 +23,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html {
+html, body {
   height: 100%;
 }
 
@@ -32,8 +32,7 @@ body {
   background-color: var(--dark-bg);
   color: var(--dark-text);
   transition: background-color 0.3s, color 0.3s;
-  height: 100%;
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -43,25 +42,21 @@ body.light-theme {
   color: var(--light-text);
 }
 
-#root, .app {
-  height: 100%;
-}
-
 .app {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
-  height: 100vh;
-  height: 100dvh; /* For mobile browsers */
 }
 
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1.5rem;
+  padding: 0 1.5rem;
   background-color: var(--dark-secondary);
   box-shadow: var(--shadow);
   z-index: 10;
@@ -98,10 +93,9 @@ h1 {
   overflow-y: auto;
   padding: 1rem;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Better scrollbar styling */
 .container::-webkit-scrollbar {
   width: 6px;
 }
@@ -130,7 +124,7 @@ body.light-theme .container::-webkit-scrollbar-thumb {
 .message {
   max-width: 85%;
   margin-bottom: 0.5rem;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 1.2rem;
   border-radius: var(--message-radius);
   line-height: 1.6;
   position: relative;
@@ -163,7 +157,6 @@ body.light-theme .bot-message {
 
 .message-content {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .message-text {
@@ -173,9 +166,10 @@ body.light-theme .bot-message {
 .message pre {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  margin: 0.8rem 0;
   padding: 1rem;
   overflow-x: auto;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
 }
 
 body.light-theme .message pre {
@@ -184,7 +178,6 @@ body.light-theme .message pre {
 
 .message code {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 0.85rem;
 }
 
 .message table {
@@ -205,13 +198,6 @@ body.light-theme .message td {
   border-color: #ddd;
 }
 
-.avatar {
-  width: 32px;
-  height: 32px;
-  margin-right: 10px;
-  border-radius: 50%;
-}
-
 @keyframes blink {
   50% {
     opacity: 0;
@@ -219,7 +205,7 @@ body.light-theme .message td {
 }
 
 .prompt-form {
-  padding: 0.8rem 1rem;
+  padding: 1rem;
   background-color: var(--dark-secondary);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -233,19 +219,19 @@ body.light-theme .prompt-form {
 .prompt-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .input-container {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .prompt-input {
   flex: 1;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 1.2rem;
   border-radius: var(--border-radius);
   border: none;
   font-size: 1rem;
@@ -253,7 +239,7 @@ body.light-theme .prompt-form {
   color: var(--dark-text);
   box-shadow: var(--shadow);
   min-height: 50px;
-  max-height: 120px;
+  max-height: 150px;
   resize: none;
   line-height: 1.5;
 }
@@ -272,12 +258,12 @@ body.light-theme .prompt-input {
 .file-upload-wrapper {
   display: none;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   background-color: var(--dark-bg);
-  padding: 0.5rem;
+  padding: 0.8rem;
   border-radius: var(--border-radius);
   position: absolute;
-  bottom: calc(100% + 0.5rem);
+  bottom: calc(100% + 0.8rem);
   left: 0;
   right: 0;
   z-index: 5;
@@ -297,19 +283,19 @@ body.light-theme .prompt-input {
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.8rem;
   justify-content: flex-end;
 }
 
 .icon-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: all 0.2s ease;
   background-color: transparent;
   color: inherit;
   border: none;
@@ -325,7 +311,7 @@ body.light-theme .icon-btn:hover {
 }
 
 .icon-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 .icon-btn.primary {
@@ -344,40 +330,68 @@ body.light-theme .icon-btn:hover {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 1rem;
-  height: calc(100% - var(--header-height) - var(--input-height));
+  padding: 2rem;
+  height: calc(100vh - var(--header-height) - var(--input-height));
   max-width: 800px;
   margin: 0 auto;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .welcome-logo {
-   width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid var(--primary-color);
+  opacity: 0.9;
 }
 
-.quick-prompts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.welcome-content {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
+  max-width: 600px;
+}
+
+.welcome-content h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.welcome-content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Quick Prompts - Horizontal on desktop */
+.quick-prompts {
+  display: flex;
+  gap: 1.2rem;
   width: 100%;
   padding: 0 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.quick-prompts::-webkit-scrollbar {
+  display: none;
 }
 
 .quick-prompt {
   background-color: var(--dark-secondary);
-  padding: 1.2rem 0.8rem;
+  padding: 1.5rem 1rem;
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 200px;
+  flex-shrink: 0;
 }
 
 body.light-theme .quick-prompt {
@@ -391,11 +405,10 @@ body.light-theme .quick-prompt {
 }
 
 .quick-prompt .material-symbols-rounded {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: var(--primary-color);
 }
 
-/* Code block styles */
 .code-block {
   position: relative;
   margin: 1rem 0;
@@ -436,84 +449,123 @@ body.light-theme .quick-prompt {
   background-color: var(--secondary-color);
 }
 
-/* Responsive adjustments */
+/* Mobile - Vertical quick prompts */
 @media (max-width: 768px) {
   :root {
-    --header-height: 56px;
+    --header-height: 60px;
     --border-radius: 10px;
     --message-radius: 16px;
   }
-  
+
+  .quick-prompts {
+    flex-direction: column;
+    overflow-x: visible;
+    padding: 0;
+  }
+
+  .quick-prompt {
+    width: 100%;
+    min-width: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 1rem;
+  }
+
+  .quick-prompt .material-symbols-rounded {
+    margin-right: 0.8rem;
+  }
+
   .app-header {
-    padding: 0.8rem 1rem;
+    padding: 0 1rem;
   }
-  
+
   h1 {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
-  
+
   .message {
     max-width: 90%;
-    padding: 0.7rem;
+    padding: 0.8rem 1rem;
   }
-  
-  .quick-prompts {
-    grid-template-columns: 1fr 1fr;
+
+  .welcome-content h2 {
+    font-size: 1.8rem;
   }
-  
+
+  .welcome-content p {
+    font-size: 1rem;
+  }
+
   .prompt-input {
-    font-size: 0.95rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .welcome-logo {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  :root {
+    --header-height: 56px;
+    --border-radius: 8px;
+    --message-radius: 14px;
+  }
+
+  .message {
+    max-width: 95%;
     padding: 0.8rem;
   }
-  
+
+  .prompt-input {
+    min-height: 46px;
+    padding: 0.8rem;
+  }
+
   .icon-btn {
     width: 38px;
     height: 38px;
   }
-  
+
+  .container {
+    padding: 0.8rem;
+  }
+
+  .welcome-screen {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
   .welcome-logo {
     width: 60px;
     height: 60px;
   }
+
+  .welcome-content h2 {
+    font-size: 1.5rem;
+  }
 }
 
-@media (max-width: 480px) {
-  :root {
-    --header-height: 52px;
-    --border-radius: 8px;
-    --message-radius: 14px;
-  }
-  
+/* Desktop - Horizontal quick prompts */
+@media (min-width: 769px) {
   .quick-prompts {
-    grid-template-columns: 1fr;
-    padding: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
-  
-  .message {
-    max-width: 95%;
-  }
-  
-  .prompt-input {
-    min-height: 46px;
-    padding: 0.7rem;
-  }
-  
-  .icon-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .container {
-    padding: 0.8rem;
-  }
-  
-  .welcome-screen {
-    padding: 0.8rem;
-  }
-  
-  .welcome-logo {
-    width: 50px;
-    height: 50px;
+
+  .quick-prompt {
+    flex: 1;
+    min-width: 200px;
+    max-width: 250px;
   }
 }
 
@@ -523,25 +575,13 @@ body.light-theme .quick-prompt {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
   }
-  
+
   .prompt-form {
     padding-bottom: max(0.8rem, env(safe-area-inset-bottom));
   }
-  
+
   .container {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
-  }
-}
-
-/* Print styles */
-@media print {
-  .app-header, .prompt-form {
-    display: none;
-  }
-  
-  .container {
-    height: auto;
-    overflow: visible;
   }
 }
