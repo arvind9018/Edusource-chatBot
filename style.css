@@ -22,6 +22,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  border-radius: 10px;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -284,12 +285,13 @@ body.light-theme .message tr:hover td {
 }
 
 .prompt-form {
-  padding: 1.5rem;
+  padding: 0.8rem 1rem;
   background-color: rgba(22, 33, 62, 0.8);
   box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
   position: sticky;
   bottom: 0;
   backdrop-filter: blur(8px);
+  width: 100%;
   transition: all 0.3s ease;
 }
 
@@ -307,33 +309,35 @@ body.light-theme .prompt-form:hover {
 
 .prompt-wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
 }
 
 .input-container {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex: 1;
+  min-width: 0; /* Important for flexbox shrinking */
 }
 
 .prompt-input {
-  flex: 1;
-  padding: 1rem 1.5rem;
+  width: 100%;
+  padding: 0.8rem 1.5rem;
   border-radius: var(--border-radius);
   border: none;
   font-size: 1rem;
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--dark-text);
   box-shadow: var(--shadow);
-  min-height: 60px;
-  max-height: 150px;
+  min-height: 50px;
+  max-height: 120px;
   resize: none;
   line-height: 1.5;
   transition: all 0.3s ease;
+  flex: 1;
 }
-
 
 .prompt-input:focus {
   outline: none;
@@ -399,8 +403,8 @@ body.light-theme .prompt-input:focus {
 
 .action-buttons {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  gap: 0.8rem;
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -417,6 +421,8 @@ body.light-theme .prompt-input:focus {
   border: none;
   position: relative;
   overflow: hidden;
+  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
 .icon-btn::after {
@@ -510,7 +516,6 @@ body.light-theme .icon-btn:hover {
   border-radius: 50%;
   border: 3px solid transparent;
   background: var(--gradient-primary) border-box;
-
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   padding: 2px;
@@ -708,6 +713,20 @@ body.light-theme .quick-prompt {
     width: 46px;
     height: 46px;
   }
+
+  /* Fix for prompt form on mobile */
+  .prompt-form {
+    padding: 0.8rem;
+    overflow: hidden; /* Prevent scrolling */
+  }
+
+  .prompt-wrapper {
+    gap: 0.5rem;
+  }
+
+  .action-buttons {
+    gap: 0.5rem;
+  }
 }
 
 /* Small mobile devices */
@@ -731,6 +750,7 @@ body.light-theme .quick-prompt {
   .icon-btn {
     width: 44px;
     height: 44px;
+    font-size: 1rem;
   }
 
   .container {
@@ -745,6 +765,15 @@ body.light-theme .quick-prompt {
   .welcome-logo {
     width: 70px;
     height: 70px;
+  }
+
+  /* Further adjustments for very small screens */
+  .prompt-wrapper {
+    gap: 0.3rem;
+  }
+
+  .action-buttons {
+    gap: 0.3rem;
   }
 }
 
@@ -765,16 +794,13 @@ body.light-theme .quick-prompt {
   }
 }
 
-
-
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0  0px rgba(70,117,228,0.70); }  /* --blue‑1 */
-  25%  { box-shadow: 0 0 0  5px rgba(65,109,210,0.50); }  /* --blue‑2 */
-  50%  { box-shadow: 0 0 0 10px rgba(60,101,193,0.35); }  /* --blue‑3 */
-  75%  { box-shadow: 0 0 0 15px rgba(55,93,175,0.20); }  /* --blue‑4 */
-  100% { box-shadow: 0 0 0 20px rgba(51,85,158,0.00); }  /* --blue‑5 */
+  0%   { box-shadow: 0 0 0  0px rgba(70,117,228,0.70); }
+  25%  { box-shadow: 0 0 0  5px rgba(65,109,210,0.50); }
+  50%  { box-shadow: 0 0 0 10px rgba(60,101,193,0.35); }
+  75%  { box-shadow: 0 0 0 15px rgba(55,93,175,0.20); }
+  100% { box-shadow: 0 0 0 20px rgba(51,85,158,0.00); }
 }
-
 
 .file-preview-container {
   margin-top: 10px;
