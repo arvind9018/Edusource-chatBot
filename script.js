@@ -41,31 +41,44 @@ if (SpeechRecognition) {
   recognition.onstart = () => {
     isRecording = true;
     listeningState.style.display = "flex";
+    micBtn.classList.add("recording");
     updateButtonStates();
+    console.log("🎤 Speech recognition started");
   };
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
     promptInput.value = transcript;
     updateButtonStates();
+    console.log("🎤 Speech recognized:", transcript);
   };
 
   recognition.onerror = (event) => {
     console.error("Speech recognition error", event.error);
-    isRecording = false;
-    listeningState.style.display = "none";
-    updateButtonStates();
+    stopListening();
+    if (event.error === 'no-speech') {
+      alert("No speech was detected. Please try again.");
+    }
   };
 
   recognition.onend = () => {
-    isRecording = false;
-    listeningState.style.display = "none";
-    updateButtonStates();
+    stopListening();
+    console.log("🎤 Speech recognition ended");
   };
 } else {
   micBtn.style.display = "none";
   console.warn("Speech recognition not supported in this browser");
 }
+
+const stopListening = () => {
+  if (recognition && isRecording) {
+    recognition.stop();
+  }
+  isRecording = false;
+  listeningState.style.display = "none";
+  micBtn.classList.remove("recording");
+  updateButtonStates();
+};
 
 // Initialize highlight.js for code syntax highlighting
 hljs.highlightAll();
@@ -85,14 +98,43 @@ const createMsgElement = (content, ...classes) => {
   const contentDiv = document.createElement("div");
   contentDiv.classList.add("message-content");
   
-  // Preserve original formatting by using white-space: pre-wrap
-  contentDiv.style.whiteSpace = 'pre-wrap';
-  
-  // For user messages, just display the text as-is
-  if (classes.includes("user-message")) {
-    contentDiv.textContent = content;
+  // For user messages with files
+  if (classes.includes("user-message") && userData.file.data) {
+    // Add text content if exists
+    if (content) {
+      const textDiv = document.createElement("div");
+      textDiv.style.whiteSpace = 'pre-wrap';
+      textDiv.textContent = content;
+      contentDiv.appendChild(textDiv);
+    }
+    
+    // Add file preview
+    const filePreviewDiv = document.createElement("div");
+    filePreviewDiv.classList.add("file-preview-container");
+    
+    if (userData.file.isImage) {
+      // For images - show the image
+      const imgPreview = document.createElement("img");
+      imgPreview.src = `data:${userData.file.mime_type};base64,${userData.file.data}`;
+      imgPreview.classList.add("uploaded-image");
+      imgPreview.alt = "Uploaded image";
+      filePreviewDiv.appendChild(imgPreview);
+    }
+    
+    // For all files - show the file name
+    const fileNameDiv = document.createElement("div");
+    fileNameDiv.classList.add("file-name");
+    fileNameDiv.textContent = userData.file.fileName;
+    filePreviewDiv.appendChild(fileNameDiv);
+    
+    contentDiv.appendChild(filePreviewDiv);
   } 
-  // For bot messages, process markdown and code blocks
+  // For regular user messages (no file)
+  else if (classes.includes("user-message")) {
+    contentDiv.style.whiteSpace = 'pre-wrap';
+    contentDiv.textContent = content;
+  }
+  // For bot messages
   else {
     // Process content while preserving newlines and spacing
     let processedContent = content
@@ -128,31 +170,28 @@ const typingEffect = (text, element) => {
   element.innerHTML = "";
   element.style.whiteSpace = 'pre-wrap';
   let i = 0;
-  const speed = 20;
+  const speed = 30;
+  const chunkSize = 20;
   isTyping = true;
   shouldStopTyping = false;
   currentTypingText = text;
-  
+
   const type = () => {
     if (i < text.length && !shouldStopTyping) {
-      const currentText = text.substring(0, i + 1);
-      
-      // Update scroll position if needed
+      const nextChunk = text.substring(i, i + chunkSize);
+      element.textContent += nextChunk;
+      i += chunkSize;
+
+      // Scroll if near bottom
       const scrollPosition = container.scrollTop + container.clientHeight;
       const scrollThreshold = container.scrollHeight - 100;
       if (scrollPosition >= scrollThreshold) {
         scrollToBottom();
       }
-      
-      // For typing effect, we'll use textContent to preserve formatting
-      element.textContent = currentText;
-      
-      i++;
+
       typingInterval = setTimeout(type, speed);
     } else {
-      // Final processing when typing completes or is stopped
       if (!shouldStopTyping) {
-        // Process markdown after typing completes
         let processedContent = text
           .replace(/```(\w+)?\n([\s\S]+?)\n```/g, (match, lang, code) => {
             const language = lang || 'plaintext';
@@ -162,24 +201,23 @@ const typingEffect = (text, element) => {
           .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
           .replace(/\*(.*?)\*/g, '<em>$1</em>')
           .replace(/`(.*?)`/g, '<code>$1</code>');
-        
         element.innerHTML = processedContent;
-        
-        // Re-highlight code blocks
+
         document.querySelectorAll('pre code').forEach((block) => {
           hljs.highlightElement(block);
         });
       }
-      
+
       isTyping = false;
       document.body.classList.remove("bot-responding");
       updateButtonStates();
     }
   };
-  
+
   clearInterval(typingInterval);
   typingInterval = setTimeout(type, speed);
 };
+
 // Generate response from Gemini API
 const generateResponse = async (botMsgDiv) => {
   const contentElement = botMsgDiv.querySelector(".message-content");
@@ -236,7 +274,7 @@ const generateResponse = async (botMsgDiv) => {
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const userMessage = promptInput.value.trim();
-  if (!userMessage || document.body.classList.contains("bot-responding")) return;
+  if (!userMessage && !userData.file.data) return;
 
   promptInput.value = "";
   userData.message = userMessage;
@@ -310,6 +348,10 @@ stopBtn.addEventListener("click", () => {
     controller.abort();
     controller = null;
   }
+  if (isRecording) {
+    stopListening();
+    return;
+  }
   
   // Stop the typing effect
   if (isTyping) {
@@ -339,6 +381,12 @@ clearBtn.addEventListener("click", () => {
   document.body.classList.remove("bot-responding");
   welcomeScreen.style.display = "flex";
   updateButtonStates();
+});
+
+// Auto-resize textarea
+promptInput.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = (this.scrollHeight) + 'px';
 });
 
 // Quick prompts
@@ -387,10 +435,15 @@ themeToggle.querySelector(".theme-icon").textContent = isLightTheme ? "dark_mode
 promptForm.addEventListener("submit", handleFormSubmit);
 fileBtn.addEventListener("click", () => fileInput.click());
 micBtn.addEventListener("click", () => {
-  if (recognition) {
-    recognition.start();
-  } else {
+  if (!recognition) {
     alert("Speech recognition not supported in your browser");
+    return;
+  }
+
+  if (isRecording) {
+    stopListening();
+  } else {
+    recognition.start();
   }
 });
 
@@ -415,4 +468,13 @@ document.addEventListener('click', (e) => {
       setTimeout(() => e.target.textContent = 'Copy', 2000);
     }
   }
+});
+
+let resizeTimeout;
+promptInput.addEventListener('input', function () {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    this.style.height = 'auto';
+    this.style.height = `${this.scrollHeight}px`;
+  }, 10);
 });
