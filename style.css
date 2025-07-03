@@ -897,3 +897,43 @@ body.light-theme .quick-prompt {
     padding-right: max(0.8rem, env(safe-area-inset-right));
   }
 }
+
+
+/* Add this to your existing CSS */
+.prompt-input {
+  -webkit-appearance: none; /* Removes iOS styling */
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Specifically target mobile Safari which adds extra styling */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .prompt-input {
+    -webkit-appearance: none;
+    border-radius: var(--border-radius);
+  }
+}
+
+/* Ensure no mobile-specific transformations are applied */
+.prompt-input:not(:focus) {
+  transform: none !important;
+}
+
+/* In your existing media query for mobile (480px and below) */
+@media (max-width: 480px) {
+  .prompt-input {
+    /* Add these properties to override any mobile browser defaults */
+    -webkit-user-select: text; /* Allow text selection */
+    -moz-user-select: text;
+    user-select: text;
+    -webkit-tap-highlight-color: transparent;
+    /* Ensure consistent padding */
+    padding: 0.8rem !important;
+  }
+  
+  /* Remove any mobile-specific focus styles */
+  .prompt-input:focus {
+    box-shadow: 0 0 0 3px var(--primary-color), 0 5px 25px rgba(108, 92, 231, 0.3) !important;
+    transform: none !important;
+  }
+}
