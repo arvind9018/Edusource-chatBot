@@ -90,7 +90,7 @@ const createMsgElement = (content, ...classes) => {
   
   // Create avatar
   const avatar = document.createElement("img");
-  avatar.src = classes.includes("user-message") ? "Images/logo.jpg" : "Images/logo2.jpg";
+  avatar.src = classes.includes("user-message") ? "Images/logo3.png" : "Images/logo2.jpg";
   avatar.classList.add("avatar");
   avatar.alt = classes.includes("user-message") ? "User Avatar" : "Edusource Avatar";
   
