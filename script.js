@@ -25,6 +25,8 @@ let isTyping = false;
 let shouldStopTyping = false;
 let currentTypingText = '';
 let isRecording = false;
+let lastScrollPosition = 0;
+let userScrolledManually = false;
 const userData = { message: "", file: {} };
 const chatHistory = [];
 
@@ -82,6 +84,27 @@ const stopListening = () => {
 
 // Initialize highlight.js for code syntax highlighting
 hljs.highlightAll();
+
+// Enhanced scroll to bottom with multiple options
+const scrollToBottom = (behavior = "smooth", force = false) => {
+  const scrollPosition = container.scrollTop + container.clientHeight;
+  const scrollThreshold = container.scrollHeight - 50; // 50px from bottom
+  
+  // Only scroll if we're not already near the bottom or if forced
+  if (force || scrollPosition < scrollThreshold) {
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: behavior
+    });
+  }
+};
+
+// Auto-scroll when new messages arrive, unless user scrolled up
+const autoScrollIfNeeded = () => {
+  if (!userScrolledManually) {
+    scrollToBottom("smooth");
+  }
+};
 
 // Create message element
 const createMsgElement = (content, ...classes) => {
@@ -154,18 +177,12 @@ const createMsgElement = (content, ...classes) => {
   div.appendChild(avatar);
   div.appendChild(contentDiv);
   
+  // After adding to DOM
+  setTimeout(autoScrollIfNeeded, 10);
   return div;
 };
 
-// Scroll to bottom of chat
-const scrollToBottom = () => {
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior: "smooth"
-  });
-};
-
-// Typing effect for bot messages
+// Enhanced typing effect with scroll management
 const typingEffect = (text, element) => {
   element.innerHTML = "";
   element.style.whiteSpace = 'pre-wrap';
@@ -176,17 +193,19 @@ const typingEffect = (text, element) => {
   shouldStopTyping = false;
   currentTypingText = text;
 
+  // Initial scroll to bottom (instant)
+  scrollToBottom("auto", true);
+
   const type = () => {
     if (i < text.length && !shouldStopTyping) {
       const nextChunk = text.substring(i, i + chunkSize);
       element.textContent += nextChunk;
       i += chunkSize;
 
-      // Scroll if near bottom
-      const scrollPosition = container.scrollTop + container.clientHeight;
-      const scrollThreshold = container.scrollHeight - 100;
-      if (scrollPosition >= scrollThreshold) {
-        scrollToBottom();
+      // Smart scrolling - only if user hasn't manually scrolled up
+      const userScrolledUp = container.scrollTop + container.clientHeight < container.scrollHeight - 200;
+      if (!userScrolledUp) {
+        scrollToBottom("auto");
       }
 
       typingInterval = setTimeout(type, speed);
@@ -206,6 +225,9 @@ const typingEffect = (text, element) => {
         document.querySelectorAll('pre code').forEach((block) => {
           hljs.highlightElement(block);
         });
+
+        // Final smooth scroll after content is complete
+        setTimeout(() => scrollToBottom("smooth"), 100);
       }
 
       isTyping = false;
@@ -272,7 +294,8 @@ const generateResponse = async (botMsgDiv) => {
 
 // Handle form submission
 const handleFormSubmit = (e) => {
-  e.preventDefault();
+  if (e) e.preventDefault();
+  
   const userMessage = promptInput.value.trim();
   if (!userMessage && !userData.file.data) return;
 
@@ -286,7 +309,7 @@ const handleFormSubmit = (e) => {
   // Create user message element
   const userMsgDiv = createMsgElement(userMessage, "user-message");
   chatsContainer.appendChild(userMsgDiv);
-  scrollToBottom();
+  scrollToBottom("smooth", true);
 
   // Create bot message element
   setTimeout(() => {
@@ -305,10 +328,19 @@ const handleFormSubmit = (e) => {
     botMsgDiv.appendChild(avatar);
     botMsgDiv.appendChild(contentDiv);
     chatsContainer.appendChild(botMsgDiv);
-    scrollToBottom();
+    scrollToBottom("smooth", true);
     
     generateResponse(botMsgDiv);
   }, 200);
+};
+
+// Improved input handling for Enter/Shift+Enter
+const handleKeyDown = (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    handleFormSubmit();
+  }
+  // Shift+Enter will create a new line as normal
 };
 
 // File input handling
@@ -332,6 +364,7 @@ fileInput.addEventListener("change", () => {
       mime_type: file.type,
       isImage
     };
+    updateButtonStates();
   };
 });
 
@@ -339,6 +372,7 @@ fileInput.addEventListener("change", () => {
 document.querySelector("#cancel-file-btn").addEventListener("click", () => {
   userData.file = {};
   fileUploadWrapper.classList.remove("active", "img-attached", "file-attached");
+  updateButtonStates();
 });
 
 // Stop response generation
@@ -387,6 +421,7 @@ clearBtn.addEventListener("click", () => {
 promptInput.addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = (this.scrollHeight) + 'px';
+  updateButtonStates();
 });
 
 // Quick prompts
@@ -394,7 +429,7 @@ quickPrompts.forEach(prompt => {
   prompt.addEventListener("click", () => {
     const text = prompt.querySelector("p").textContent;
     promptInput.value = text;
-    promptForm.dispatchEvent(new Event("submit"));
+    handleFormSubmit();
   });
 });
 
@@ -408,22 +443,29 @@ themeToggle.addEventListener("click", () => {
 // Update button states based on current app state
 const updateButtonStates = () => {
   const hasText = promptInput.value.trim().length > 0;
+  const hasFile = !!userData.file.data;
   const isResponding = document.body.classList.contains("bot-responding");
   
-  // Mic button - show when input is empty and not recording
-  micBtn.style.display = hasText || isRecording || isResponding ? "none" : "flex";
+  // Mic button - show when input is empty and not recording/responding
+  micBtn.style.display = (hasText || isRecording || isResponding) ? "none" : "flex";
   
-  // Send button - show when text is entered and not responding
-  sendBtn.style.display = hasText && !isResponding ? "flex" : "none";
+  // Send button - show when (text or file exists) and not responding
+  sendBtn.style.display = (hasText || hasFile) && !isResponding ? "flex" : "none";
   
   // Stop button - show during recording or bot response
   stopBtn.style.display = isRecording || isResponding ? "flex" : "none";
   
-  // File button - show except during recording
-  fileBtn.style.display = isRecording ? "none" : "flex";
+  // File button - show except during recording/responding
+  fileBtn.style.display = isRecording || isResponding ? "none" : "flex";
   
-  // Clear button is always visible
-  clearBtn.style.display = "flex";
+  // Clear button is always visible unless recording
+  clearBtn.style.display = isRecording ? "none" : "flex";
+  
+  // Disable buttons when appropriate
+  sendBtn.disabled = isResponding || (!hasText && !hasFile);
+  fileBtn.disabled = isResponding || isRecording;
+  micBtn.disabled = isResponding;
+  clearBtn.disabled = isRecording;
 };
 
 // Initialize theme
@@ -431,8 +473,27 @@ const isLightTheme = localStorage.getItem("themeColor") === "light";
 document.body.classList.toggle("light-theme", isLightTheme);
 themeToggle.querySelector(".theme-icon").textContent = isLightTheme ? "dark_mode" : "light_mode";
 
+// Scroll position tracker
+container.addEventListener('scroll', () => {
+  const currentScroll = container.scrollTop;
+  
+  // Detect if user is scrolling up (negative delta)
+  if (currentScroll < lastScrollPosition) {
+    userScrolledManually = true;
+  }
+  
+  // Detect if user scrolled to bottom
+  const atBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
+  if (atBottom) {
+    userScrolledManually = false;
+  }
+  
+  lastScrollPosition = currentScroll;
+});
+
 // Event listeners
 promptForm.addEventListener("submit", handleFormSubmit);
+promptInput.addEventListener("keydown", handleKeyDown);
 fileBtn.addEventListener("click", () => fileInput.click());
 micBtn.addEventListener("click", () => {
   if (!recognition) {
@@ -470,11 +531,23 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// Auto-resize textarea with debounce
 let resizeTimeout;
-promptInput.addEventListener('input', function () {
+promptInput.addEventListener('input', function() {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
     this.style.height = 'auto';
-    this.style.height = `${this.scrollHeight}px`;
+    const maxHeight = parseFloat(getComputedStyle(this).maxHeight);
+    const scrollHeight = this.scrollHeight;
+    
+    if (scrollHeight <= maxHeight) {
+      this.style.height = scrollHeight + 'px';
+    } else {
+      this.style.height = maxHeight + 'px';
+      this.style.overflowY = 'auto';
+    }
   }, 10);
 });
+
+// Trigger initial setup
+promptInput.dispatchEvent(new Event('input'));
